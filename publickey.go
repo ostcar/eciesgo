@@ -7,8 +7,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"math/big"
-
-	"github.com/fomichev/secp256k1"
 )
 
 // PublicKey instance with nested elliptic.Curve interface (secp256k1 instance in our case)
@@ -30,7 +28,7 @@ func NewPublicKeyFromHex(s string) (*PublicKey, error) {
 // NewPublicKeyFromBytes decodes public key raw bytes and returns PublicKey instance;
 // Supports both compressed and uncompressed public keys
 func NewPublicKeyFromBytes(b []byte) (*PublicKey, error) {
-	curve := secp256k1.SECP256K1()
+	curve := getCurve()
 
 	switch b[0] {
 	case 0x02, 0x03:
@@ -159,10 +157,7 @@ func (k *PublicKey) Decapsulate(priv *PrivateKey) ([]byte, error) {
 
 // Equals compares two public keys with constant time (to resist timing attacks)
 func (k *PublicKey) Equals(pub *PublicKey) bool {
-	if subtle.ConstantTimeCompare(k.X.Bytes(), pub.X.Bytes()) == 1 &&
-		subtle.ConstantTimeCompare(k.Y.Bytes(), pub.Y.Bytes()) == 1 {
-		return true
-	}
-
-	return false
+	eqX := subtle.ConstantTimeCompare(k.X.Bytes(), pub.X.Bytes()) == 1
+	eqY := subtle.ConstantTimeCompare(k.Y.Bytes(), pub.Y.Bytes()) == 1
+	return eqX && eqY
 }
