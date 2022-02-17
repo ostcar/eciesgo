@@ -6,17 +6,18 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"fmt"
+	"io"
 	"math/big"
 
 	"github.com/fomichev/secp256k1"
 )
 
 // Encrypt encrypts a passed message with a receiver public key, returns ciphertext or encryption error
-func Encrypt(pubkey *PublicKey, msg []byte) ([]byte, error) {
+func Encrypt(random io.Reader, pubkey *PublicKey, msg []byte) ([]byte, error) {
 	var ct bytes.Buffer
 
 	// Generate ephemeral key
-	ek, err := GenerateKey()
+	ek, err := GenerateKey(random)
 	if err != nil {
 		return nil, err
 	}

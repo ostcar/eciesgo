@@ -3,10 +3,10 @@ package eciesgo
 import (
 	"bytes"
 	"crypto/elliptic"
-	"crypto/rand"
 	"crypto/subtle"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"math/big"
 
 	"github.com/fomichev/secp256k1"
@@ -19,10 +19,10 @@ type PrivateKey struct {
 }
 
 // GenerateKey generates secp256k1 key pair
-func GenerateKey() (*PrivateKey, error) {
+func GenerateKey(random io.Reader) (*PrivateKey, error) {
 	curve := secp256k1.SECP256K1()
 
-	p, x, y, err := elliptic.GenerateKey(curve, rand.Reader)
+	p, x, y, err := elliptic.GenerateKey(curve, random)
 	if err != nil {
 		return nil, fmt.Errorf("cannot generate key pair: %w", err)
 	}

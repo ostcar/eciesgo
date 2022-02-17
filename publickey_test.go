@@ -1,8 +1,10 @@
 package eciesgo
 
 import (
-	"github.com/stretchr/testify/assert"
+	"crypto/rand"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewPublicKeyFromHex(t *testing.T) {
@@ -11,7 +13,7 @@ func TestNewPublicKeyFromHex(t *testing.T) {
 }
 
 func TestPublicKey_Equals(t *testing.T) {
-	privkey, err := GenerateKey()
+	privkey, err := GenerateKey(rand.Reader)
 	if !assert.NoError(t, err) {
 		return
 	}

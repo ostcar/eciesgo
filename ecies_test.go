@@ -1,16 +1,18 @@
 package eciesgo
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/stretchr/testify/assert"
-	"golang.org/x/crypto/hkdf"
 	"io"
 	"io/ioutil"
 	"math/big"
 	"net/http"
 	"net/url"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/hkdf"
 )
 
 const testingMessage = "helloworld"
@@ -21,14 +23,14 @@ const pythonBackend = "https://eciespy.herokuapp.com/"
 var testingReceiverPrivkey = []byte{51, 37, 145, 156, 66, 168, 189, 189, 176, 19, 177, 30, 148, 104, 25, 140, 155, 42, 248, 190, 121, 110, 16, 174, 143, 148, 72, 129, 94, 113, 219, 58}
 
 func TestGenerateKey(t *testing.T) {
-	_, err := GenerateKey()
+	_, err := GenerateKey(rand.Reader)
 	assert.NoError(t, err)
 }
 
 func TestEncryptAndDecrypt(t *testing.T) {
 	privkey := NewPrivateKeyFromBytes(testingReceiverPrivkey)
 
-	ciphertext, err := Encrypt(privkey.PublicKey, []byte(testingMessage))
+	ciphertext, err := Encrypt(rand.Reader, privkey.PublicKey, []byte(testingMessage))
 	if !assert.NoError(t, err) {
 		return
 	}
@@ -43,7 +45,7 @@ func TestEncryptAndDecrypt(t *testing.T) {
 
 func TestPublicKeyDecompression(t *testing.T) {
 	// Generate public key
-	privkey, err := GenerateKey()
+	privkey, err := GenerateKey(rand.Reader)
 	if !assert.NoError(t, err) {
 		return
 	}
@@ -139,7 +141,7 @@ func TestEncryptAgainstPythonVersion(t *testing.T) {
 		return
 	}
 
-	ciphertext, err := Encrypt(prv.PublicKey, []byte(testingMessage))
+	ciphertext, err := Encrypt(rand.Reader, prv.PublicKey, []byte(testingMessage))
 	if !assert.NoError(t, err) {
 		return
 	}

@@ -1,9 +1,11 @@
 package eciesgo
 
 import (
+	"crypto/rand"
 	"crypto/subtle"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const privkeyBase = "f0e5b2c3ba4df3fdb3ecea30d0e60c4e4a31d1ba928f51783ae18bbd3cada572"
@@ -19,7 +21,7 @@ func TestNewPrivateKeyFromHex(t *testing.T) {
 }
 
 func TestPrivateKey_Hex(t *testing.T) {
-	privkey, err := GenerateKey()
+	privkey, err := GenerateKey(rand.Reader)
 	if !assert.NoError(t, err) {
 		return
 	}
@@ -28,7 +30,7 @@ func TestPrivateKey_Hex(t *testing.T) {
 }
 
 func TestPrivateKey_Equals(t *testing.T) {
-	privkey, err := GenerateKey()
+	privkey, err := GenerateKey(rand.Reader)
 	if !assert.NoError(t, err) {
 		return
 	}
